@@ -50,10 +50,10 @@ class Episode {
       url: 'http://www.crunchyroll.com/xml',
       data: qs.stringify(params),
       headers: {
-        host: 'www.crunchyroll.com',
-        origin: 'http://static.ak.crunchyroll.com',
+        // host: 'www.crunchyroll.com',
+        // origin: 'http://static.ak.crunchyroll.com',
         'content-type': 'application/x-www-form-urlencoded',
-        referer: 'http://static.ak.crunchyroll.com/versioned_assets/StandardVideoPlayer.f3770232.swf',
+        // referer: 'http://static.ak.crunchyroll.com/versioned_assets/StandardVideoPlayer.f3770232.swf',
         'X-Requested-With': 'ShockwaveFlash/22.0.0.192'
       }
     })

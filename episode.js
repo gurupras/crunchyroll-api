@@ -1,6 +1,5 @@
 import { TextEncoder, TextDecoder} from 'text-encoding'
 import axios from 'axios'
-import pako from 'pako'
 import crypto from 'crypto'
 import qs from 'qs'
 import zlib from 'zlib'

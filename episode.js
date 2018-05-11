@@ -17,7 +17,6 @@ function createString (args) {
   argArray.splice(2).forEach((arg) => {
     finalString += String.fromCharCode(arg % args[1] + 33)
   })
-  // console.log(`finalString=${finalString}`)
   return finalString
 }
 
@@ -44,18 +43,26 @@ class Episode {
     }
   }
 
-  async apiRequest (params) {
+  async apiRequest (params, data) {
     return axios({
       method: 'POST',
-      url: 'http://www.crunchyroll.com/xml',
-      data: qs.stringify(params),
+      url: `http://www.crunchyroll.com/xml/`,
+      params: params,
+      data: data,
+
+      // data: qs.stringify(params),
       headers: {
-        // host: 'www.crunchyroll.com',
-        // origin: 'http://static.ak.crunchyroll.com',
-        'content-type': 'application/x-www-form-urlencoded',
-        // referer: 'http://static.ak.crunchyroll.com/versioned_assets/StandardVideoPlayer.f3770232.swf',
-        'X-Requested-With': 'ShockwaveFlash/22.0.0.192'
-      }
+      //   host: 'www.crunchyroll.com',
+      //   origin: 'http://www.crunchyroll.com',
+        // 'content-type': 'application/x-www-form-urlencoded',
+      //   referer: 'http://www.crunchyroll.com/vendor/StandardVideoPlayer-10dff2a.swf',
+      //   Accept: '*/*',
+      //   'Accept-Encoding': 'gzip, deflate',
+      //   'Accept-Language': 'en-US,en;q=0.9',
+      //   'Save-Data': 'on',
+      //   'X-Requested-With': 'ShockwaveFlash/29.0.0.171',
+      //   'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.139 Safari/537.36'
+      },
     })
   }
 
@@ -75,19 +82,22 @@ class Episode {
     }
     this.configUrl = decodeURIComponent(match[1])
     const config = new URI(this.configUrl).query(true)
+
+    var data = encodeURIComponent(this.url)
+    data = data.replace(/\./g, '%2E').replace(/-/g, '%2D')
+    data = `current_page=${data}`
+    data = data.replace(/_/g, '%5F')
+
     const response = await this.apiRequest({
       req: 'RpcApiVideoPlayer_GetStandardConfig',
       media_id: this.episodeID,
-      video_format: config.video_format,
-      video_quality: config.video_quality,
-      auto_play: 1,
-      aff: 'crunchyroll-website',
-      show_popout_controls: 1,
-      pop_out_disable_message: 'Only Premium and Premium+ Members can pop out this video. Get your membership today!',
-      click_through: 0
-    })
-    // console.log(response.data)
-    // console.log(this.configUrl)
+    }, data)
+    const json = await xmlToJson(response.data)
+    const metadata = json['default:preload'].media_metadata
+    this.seriesTitle = metadata.series_title
+    this.episodeTitle = metadata.episode_title
+    this.episodeNumber = metadata.episode_number
+    this.poster = metadata.episode_image_url
   }
 
   async getSubtitles () {
@@ -127,8 +137,6 @@ class Episode {
       })
     })
 
-    // console.log(this.subtitles)
-
     // Now we have the links for each subtitle
     // Fetch link to get each subtitle's IV and data
     async function getInfo (subtitle) {
@@ -146,19 +154,15 @@ class Episode {
       promises.push(promise)
     })
     await Promise.all(promises)
-    // console.log(`Finished IV fetching`)
-    // console.log(JSON.stringify(this.subtitles, null, 2))
   }
 
   async generateKey (subtitleID) {
     const eq1 = Math.floor(Math.sqrt(6.9) * Math.pow(2, 25)) ^ subtitleID
     const eq2 = Math.floor(Math.sqrt(6.9) * Math.pow(2, 25))
     const eq3 = ((subtitleID ^ eq2) ^ (subtitleID^eq2)>>3 ^ eq1*32) >>>0
-    // console.log(`eq1=${eq1} eq2=${eq2} eq3=${eq3}`)
     // Create a 160-bit SHA1 hash
     const hashString = createString([20, 97, 1, 2]) + eq3
     const hashData = new TextEncoder('ascii').encode(hashString)
-    // console.log(`hashData=${hashData}`)
     const key = new Buffer(32)
     key.fill(0)
     crypto.createHash('sha1').update(hashString).digest().copy(key)

@@ -4,6 +4,9 @@ test('Get video data', async () => {
   const episode = new Episode('http://www.crunchyroll.com/my-hero-academia/episode-1-izuku-midoriya-origin-730707')
   await episode.parse()
 
+  expect(episode.seriesTitle.length)
+  expect(episode.episodeTitle.length)
+  expect(episode.episodeNumber.length)
   expect(episode.subtitles.length).toBeGreaterThan(0)
   episode.subtitles.forEach((subtitle) => {
     expect(subtitle.apiUrl)

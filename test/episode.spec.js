@@ -9,9 +9,9 @@ test('Get video data', async () => {
   expect(episode.episodeNumber.length)
   expect(episode.subtitles.length).toBeGreaterThan(0)
   episode.subtitles.forEach((subtitle) => {
-    expect(subtitle.apiUrl)
+    expect(subtitle.apiUrl).toBeTruthy()
     expect(subtitle.iv.length)
-    expect(subtitle.data)
+    expect(subtitle.data).toBeTruthy()
   })
 })
 
@@ -50,17 +50,10 @@ describe('Decrypt Subtitles', async () => {
     await episode.parse()
 
     const subtitles = await episode.getSubtitles()
-    subtitles.map((entry) => {
-      const events = entry.content.events
-      expect(entry.content)
-      expect(events)
-      expect(events.length).toBeGreaterThan(0)
-      events.map((entry) => {
-        const keys = ['id', 'start', 'end', 'text']
-        keys.map((key) => {
-          expect(entry[key])
-        })
-      })
+    subtitles.forEach((entry) => {
+      expect(entry.label).toBeTruthy()
+      expect(entry.language).toBeTruthy()
+      expect(entry.captions).toBeTruthy()
     })
   })
 })

@@ -15,10 +15,8 @@ class Subtitle {
     return subsrt.detect(content)
   }
 
-  asWebVTT () {
-    return subsrt.convert(this.captions, {
-      format: 'vtt'
-    })
+  build (format) {
+    return subsrt.build(this.captions, {format})
   }
 }
 

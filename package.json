@@ -12,7 +12,7 @@
     "axios": "^0.18.0",
     "crypto": "^1.0.1",
     "qs": "^6.5.2",
-    "subsrt": "^1.0.0",
+    "subsrt": "git+ssh://git@github.com/gurupras/subsrt.git",
     "text-encoding": "^0.6.4",
     "urijs": "^1.19.1",
     "xml2js": "^0.4.19",

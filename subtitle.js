@@ -4,7 +4,11 @@ class Subtitle {
   constructor (label, language, content) {
     this.label = label
     this.language = language
-    this.captions = subsrt.parse(content)
+    if (typeof content === 'string') {
+      this.captions = subsrt.parse(content)
+    } else {
+      this.captions = content
+    }
   }
 
   static detect (content) {

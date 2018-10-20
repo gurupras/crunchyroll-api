@@ -77,7 +77,7 @@ class Episode {
   }
 
   async parseConfigUrl (data) {
-    const regex = /"config_url":"(.*?)"/gm
+    const regex = /config_url=(.*?)"/gm
     const match = regex.exec(data)
     if (!match) {
       throw new Error(`Failed to find config_url`)

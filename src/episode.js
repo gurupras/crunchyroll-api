@@ -25,7 +25,6 @@ class Episode {
 
     // We need to get seriesTitle separately
     regex = /vilos\.config\.analytics\s*=\s*(\{.*\})/m
-    debugger
     match = regex.exec(data)
     if (match) {
       try {

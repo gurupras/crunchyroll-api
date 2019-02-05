@@ -1,4 +1,4 @@
-import { Episode, Subtitle } from '../index'
+import { Episode, Subtitle } from '@/index'
 
 describe('Test import', async () => {
   test('Episode', async () => {

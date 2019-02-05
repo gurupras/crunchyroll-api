@@ -16,7 +16,7 @@ class Subtitle {
   }
 
   build (format) {
-    return subsrt.build(this.captions, {format})
+    return subsrt.build(this.captions, { format })
   }
 }
 

@@ -1,7 +1,7 @@
 var path = require('path')
 
 module.exports = {
-  rootDir: path.resolve(__dirname, '../'),
+  rootDir: __dirname,
   moduleFileExtensions: [
     'js',
     'json'
@@ -10,7 +10,7 @@ module.exports = {
     '^.+\\.js$': '<rootDir>/node_modules/babel-jest'
   },
   moduleNameMapper: {
-    '^@/(.*)$': '<rootDir>/src/$1'
+    '@/(.*)$': '<rootDir>/src/$1'
   },
   testPathIgnorePatterns: [
     '<rootDir>/build/',
@@ -18,7 +18,7 @@ module.exports = {
   ],
   collectCoverage: true,
   collectCoverageFrom: [
-    '**/*.{js}'
+    'src/*.{js}'
   ],
   coverageReporters: ['html', 'text-summary'],
   snapshotSerializers: [

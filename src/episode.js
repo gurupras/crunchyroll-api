@@ -24,10 +24,15 @@ class Episode {
     const config = JSON.parse(match[1])
 
     // We need to get seriesTitle separately
-    regex = /<meta property="og:title" content="(.*)">/m
+    regex = /vilos\.config\.analytics\s*=\s*(\{.*\})/m
+    debugger
     match = regex.exec(data)
     if (match) {
-      this.seriesTitle = match[1]
+      try {
+        const analytics = JSON.parse(match[1])
+        this.seriesTitle = analytics.media_reporting_parent.title
+      } catch (e) {
+      }
     }
 
     this.config = config

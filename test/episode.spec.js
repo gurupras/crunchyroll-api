@@ -9,7 +9,7 @@ describe('Episode', () => {
     await episode.parse()
     expect(episode.config).toBeTruthy()
     expect(episode.config.subtitles).toBeTruthy()
-    // expect(episode.seriesTitle).toEqual('My Hero Academia')
+    expect(episode.seriesTitle).toEqual('My Hero Academia')
     expect(episode.episodeTitle).toEqual('Izuku Midoriya: Origin')
     expect(episode.episodeNumber).toEqual(1)
   })

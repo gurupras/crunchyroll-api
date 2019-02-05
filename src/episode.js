@@ -51,7 +51,7 @@ class Episode {
         throw new Error(response.statusText)
       }
       const { data: ass } = response
-      this.subtitles.push(new Subtitle(language.substr(0, 2), title, ass))
+      this.subtitles.push(new Subtitle(title, language.substr(0, 2), ass))
     }))
   }
 }

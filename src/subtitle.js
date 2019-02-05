@@ -1,5 +1,19 @@
 import subsrt from 'subsrt'
 
+const oldVTT = subsrt.format['vtt']
+subsrt.format['vtt'] = {
+  name: 'vtt',
+  parse: oldVTT.parse,
+  build (captions, options) {
+    let content = oldVTT.build(captions, options)
+    content = content.replace(/(.*) --> (.*)/g, (match, p1, p2) => {
+      return `${p1.replace(/,/, '.')} --> ${p2.replace(/,/, '.')}`
+    })
+    return content
+  },
+  detect: oldVTT.detect
+}
+
 class Subtitle {
   constructor (label, language, content) {
     this.label = label

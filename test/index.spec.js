@@ -1,6 +1,6 @@
 import { Episode, Subtitle } from '@/index'
 
-describe('Test import', async () => {
+describe('Test import', () => {
   test('Episode', async () => {
     const episode = new Episode('http://www.crunchyroll.com/my-hero-academia/episode-1-izuku-midoriya-origin-730707')
     expect(episode).toBeTruthy()

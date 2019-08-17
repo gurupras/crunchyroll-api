@@ -5,7 +5,9 @@ subsrt.format['vtt'] = {
   name: 'vtt',
   parse: oldVTT.parse,
   build (captions, options) {
-    let content = oldVTT.build(captions, options)
+    const fixedCaptions = [...captions]
+    fixedCaptions.forEach(entry => { entry.data.Text = entry.data.Text.trim() })
+    let content = oldVTT.build(fixedCaptions, options)
     content = content.replace(/(.*) --> (.*)/g, (match, p1, p2) => {
       return `${p1.replace(/,/, '.')} --> ${p2.replace(/,/, '.')}`
     })

@@ -18,7 +18,7 @@ module.exports = {
   ],
   collectCoverage: true,
   collectCoverageFrom: [
-    'src/*.{js}'
+    'src/**'
   ],
   coverageReporters: ['html', 'text-summary'],
   snapshotSerializers: [

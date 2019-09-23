@@ -15,11 +15,27 @@ class Episode {
     await this.getSubtitles()
   }
 
+  async isPremiumVideo () {
+    const response = await axios.get(this.url)
+    const { data } = response
+    const pattern = /<script type="application\/ld\+json">\s*(\{.*?\})\s*<\/script>/mgs
+    const match = pattern.exec(data)
+    if (match) {
+      const metadataStr = match[1]
+      const metadata = JSON.parse(metadataStr)
+      const { potentialAction = {} } = metadata
+      const { actionAccessibilityRequirement = {} } = potentialAction
+      const { category = 'nologinrequired', requiresSubscription = [] } = actionAccessibilityRequirement
+      return category !== 'nologinrequired' && requiresSubscription.length > 0
+    }
+    return false
+  }
+
   async parseConfigUrl (data) {
     let regex = /vilos\.config\.media\s*=\s*(\{.*\})/m
     let match = regex.exec(data)
     if (!match) {
-      throw new Error(`Failed to find config`)
+      throw new Error('Failed to find config')
     }
     const config = JSON.parse(match[1])
 

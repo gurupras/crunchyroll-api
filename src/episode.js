@@ -18,7 +18,7 @@ class Episode {
   async isPremiumVideo () {
     const response = await axios.get(this.url)
     const { data } = response
-    const pattern = /<script type="application\/ld\+json">\s*(\{.*?\})\s*<\/script>/mgs
+    const pattern = /<script type="application\/ld\+json">\s*(\{.*?\})\s*<\/script>/mg
     const match = pattern.exec(data)
     if (match) {
       const metadataStr = match[1]

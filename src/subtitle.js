@@ -1,11 +1,11 @@
 import subsrt from 'subsrt'
 
-const oldVTT = subsrt.format['vtt']
-subsrt.format['vtt'] = {
+const oldVTT = subsrt.format.vtt
+subsrt.format.vtt = {
   name: 'vtt',
   parse: oldVTT.parse,
   build (captions, options) {
-    function replace(entry, fn) {
+    function replace (entry, fn) {
       entry.data.Text = fn(entry.data.Text)
       entry.text = fn(entry.text)
     }

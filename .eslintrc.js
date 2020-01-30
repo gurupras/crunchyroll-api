@@ -4,8 +4,7 @@ module.exports = {
     es6: true
   },
   extends: [
-    'standard',
-    'plugin:jest/recommended'
+    'standard'
   ],
   globals: {
     Atomics: 'readonly',

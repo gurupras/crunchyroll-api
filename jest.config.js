@@ -2,6 +2,9 @@ var path = require('path')
 
 module.exports = {
   rootDir: __dirname,
+  setupFilesAfterEnv: [
+    'jest-extended'
+  ],
   moduleFileExtensions: [
     'js',
     'json'

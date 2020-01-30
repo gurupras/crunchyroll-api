@@ -51,10 +51,72 @@ class Episode {
     }
 
     this.config = config
-    const { metadata } = config
+    const { metadata, streams } = config
     this.episodeTitle = metadata.title
     this.episodeNumber = Number(metadata.episode_number)
     this.poster = config.thumbnail.url
+    streams.forEach(stream => {
+      try {
+        if (stream.audio_lang) {
+          const { language, country } = this.getLanguageAndCountry(stream.audio_lang)
+          Object.assign(stream, {
+            audio: {
+              language,
+              country
+            }
+          })
+        }
+      } catch (e) {
+      }
+      try {
+        const { language, country } = this.getLanguageAndCountry(stream.hardsub_lang)
+        Object.assign(stream, {
+          hardsub: {
+            language,
+            country
+          }
+        })
+      } catch (e) {
+      }
+    }, this)
+  }
+
+  getLanguageAndCountry (input) {
+    const countryMap = {
+      BR: 'Brasil',
+      DE: 'Germany',
+      ES: 'España',
+      FR: 'France',
+      IT: 'Italy',
+      JP: 'Japan',
+      LA: 'América Latina',
+      UK: 'United Kingdom',
+      US: 'America'
+    }
+    const languageMap = {
+      en: 'English',
+      de: 'Deutsch',
+      es: 'Español',
+      it: 'Italiano',
+      ja: '日本語',
+      fr: 'Français',
+      pt: 'Português',
+      ar: 'العربية',
+      ru: 'Русский',
+      kr: '한국어'
+    }
+
+    const lang = input.substring(0, 2).toLowerCase()
+    const ctry = input.substring(2, 4).toUpperCase()
+
+    const language = languageMap[lang]
+    const country = countryMap[ctry]
+    return { language, country }
+  }
+
+  getStreamsByLanuage (audioLang, hardsubLang) {
+    const { config: { streams } } = this
+    return streams.filter(stream => stream.audio_lang === audioLang && stream.hardsub_lang === hardsubLang)
   }
 
   async getSubtitles () {

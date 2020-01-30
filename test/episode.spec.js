@@ -33,9 +33,84 @@ describe('Episode', () => {
     await expect(episode.isPremiumVideo()).resolves.toBe(true)
   }, 300000)
 
-  test('Subtitle conversion', async () => {
+  test.skip('Subtitle conversion', async () => {
     await episode.parse()
     const subtitle = episode.subtitles[0]
     expect(() => subtitle.build('vtt')).not.toThrow()
+  })
+
+  test('getStreamsByLanuage', async () => {
+    await episode.parse()
+    episode.config.streams = [
+      {
+        format: 'adaptive_hls',
+        audio_lang: 'jaJP',
+        hardsub_lang: 'itIT',
+        url: 'url-jaJP-itIT',
+        resolution: 'adaptive'
+      },
+      {
+        format: 'adaptive_hls',
+        audio_lang: 'jaJP',
+        hardsub_lang: 'ruRU',
+        url: 'url-jaJP-ruRU',
+        resolution: 'adaptive'
+      },
+      {
+        format: 'adaptive_hls',
+        audio_lang: 'jaJP',
+        hardsub_lang: 'enUS',
+        url: 'url-jaJP-enUS',
+        resolution: 'adaptive'
+      },
+      {
+        format: 'adaptive_hls',
+        audio_lang: 'jaJP',
+        hardsub_lang: null,
+        url: 'url-jaJP-',
+        resolution: 'adaptive'
+      },
+      {
+        format: 'adaptive_hls',
+        audio_lang: 'jaJP',
+        hardsub_lang: 'ptBR',
+        url: 'url-jaJP-ptBR',
+        resolution: 'adaptive'
+      },
+      {
+        format: 'adaptive_hls',
+        audio_lang: 'jaJP',
+        hardsub_lang: 'deDE',
+        url: 'url-jaJP-deDE',
+        resolution: 'adaptive'
+      },
+      {
+        format: 'adaptive_hls',
+        audio_lang: 'jaJP',
+        hardsub_lang: 'frFR',
+        url: 'url-jaJP-frFR',
+        resolution: 'adaptive'
+      },
+      {
+        format: 'adaptive_hls',
+        audio_lang: 'jaJP',
+        hardsub_lang: 'arME',
+        url: 'url-jaJP-arME',
+        resolution: 'adaptive'
+      },
+      {
+        format: 'adaptive_hls',
+        audio_lang: 'jaJP',
+        hardsub_lang: 'esES',
+        url: 'url-jaJP-esES',
+        resolution: 'adaptive'
+      }
+    ]
+
+    const streams = episode.getStreamsByLanuage('jaJP', 'enUS')
+    expect(streams).toBeArrayOfSize(1)
+    const stream = streams[0]
+    expect(stream.audio_lang).toEqual('jaJP')
+    expect(stream.hardsub_lang).toEqual('enUS')
   })
 })

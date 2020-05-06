@@ -1,13 +1,15 @@
-import axios from 'axios'
+import Axios from 'axios'
 
 import Subtitle from './subtitle'
 
 class Episode {
-  constructor (url) {
+  constructor (url, axios = Axios) {
     this.url = url
+    this.axios = axios
   }
 
   async parse () {
+    const { axios } = this
     const response = await axios.get(this.url)
     // Get config
     const data = response.data
@@ -16,6 +18,7 @@ class Episode {
   }
 
   async isPremiumVideo () {
+    const { axios } = this
     const response = await axios.get(this.url)
     const { data } = response
     const pattern = /<script type="application\/ld\+json">\s*(\{.*?\})\s*<\/script>/mg
@@ -120,6 +123,7 @@ class Episode {
   }
 
   async getSubtitles () {
+    const { axios } = this
     const { config: { subtitles: subtitleMetadata } } = this
     this.subtitles = []
     await Promise.all(subtitleMetadata.map(async ({ language, url, title, format }) => {

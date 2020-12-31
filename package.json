@@ -14,7 +14,7 @@
     "axios": "^0.19.2",
     "qs": "^6.9.1",
     "subsrt": "^1.1.1",
-    "urijs": "^1.19.2"
+    "urijs": "^1.19.4"
   },
   "devDependencies": {
     "@babel/core": "^7.8.3",

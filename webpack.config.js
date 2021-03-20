@@ -14,12 +14,13 @@ const node = {
 const browser = {
   entry: './src/index.js',
   mode: 'production',
+  // devtool: 'inline-source-map',
   target: 'web',
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: 'bundle.js',
     library: 'Crunchyroll',
-    libraryTarget: 'window'
+    globalObject: 'window'
   }
 }
 

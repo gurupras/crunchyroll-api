@@ -1,4 +1,4 @@
-import subsrt from 'subsrt'
+const subsrt = require('subsrt')
 
 const oldVTT = subsrt.format.vtt
 subsrt.format.vtt = {
@@ -51,4 +51,4 @@ class Subtitle {
   }
 }
 
-export default Subtitle
+module.exports = Subtitle

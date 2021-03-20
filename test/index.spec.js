@@ -1,4 +1,4 @@
-import { Episode, Subtitle } from '@/index'
+import { OldEpisode as Episode, Subtitle } from '@/index'
 
 describe('Test import', () => {
   test('Episode', async () => {
@@ -7,7 +7,7 @@ describe('Test import', () => {
   })
 
   test('Subtitle', async () => {
-    var content = ''
+    let content = ''
     content += '5' + '\r\n'
     content += '00:00:16,700 --> 00:00:21,480' + '\r\n'
     content += 'Okay, so we have all the ingredients laid out here' + '\r\n'

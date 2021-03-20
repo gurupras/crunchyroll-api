@@ -1,59 +1,74 @@
-import Axios from 'axios'
+const Axios = require('axios')
 
-import Subtitle from './subtitle'
+const Subtitle = require('./subtitle')
 
-class Episode {
-  constructor (url, axios = Axios) {
+module.exports = class Episode {
+  constructor (url, parameters, axios = Axios) {
     this.url = url
+    Object.assign(this, parameters)
     this.axios = axios
   }
 
   async parse () {
-    const { axios } = this
-    const response = await axios.get(this.url)
-    // Get config
-    const data = response.data
-    await this.parseConfigUrl(data)
-    await this.getSubtitles()
+    throw new Error('Unimplemented')
   }
 
-  async isPremiumVideo () {
-    const { axios } = this
-    const response = await axios.get(this.url)
-    const { data } = response
-    const pattern = /<script type="application\/ld\+json">\s*(\{.*?\})\s*<\/script>/mg
-    const match = pattern.exec(data)
-    if (match) {
-      const metadataStr = match[1]
-      const metadata = JSON.parse(metadataStr)
-      const { potentialAction = {} } = metadata
-      const { actionAccessibilityRequirement = {} } = potentialAction
-      const { category = 'nologinrequired', requiresSubscription = [] } = actionAccessibilityRequirement
-      return category !== 'nologinrequired' && requiresSubscription.length > 0
+  getLanguageAndCountry (input) {
+    const countryMap = {
+      BR: 'Brasil',
+      DE: 'Germany',
+      ES: 'España',
+      FR: 'France',
+      IT: 'Italy',
+      JP: 'Japan',
+      LA: 'América Latina',
+      UK: 'United Kingdom',
+      US: 'America'
     }
-    return false
+    const languageMap = {
+      en: 'English',
+      de: 'Deutsch',
+      es: 'Español',
+      it: 'Italiano',
+      ja: '日本語',
+      fr: 'Français',
+      pt: 'Português',
+      ar: 'العربية',
+      ru: 'Русский',
+      kr: '한국어'
+    }
+
+    // If input has a -, get rid of it
+    input = input.replace(/-/g, '')
+    const lang = input.substring(0, 2).toLowerCase()
+    const ctry = input.substring(2, 4).toUpperCase()
+
+    const language = languageMap[lang]
+    const country = countryMap[ctry]
+    return { language, country }
   }
 
-  async parseConfigUrl (data) {
-    let regex = /vilos\.config\.media\s*=\s*(\{.*\})/m
-    let match = regex.exec(data)
-    if (!match) {
-      throw new Error('Failed to find config')
-    }
-    const config = JSON.parse(match[1])
+  getStreamsByLanuage (audioLang, hardsubLang) {
+    const { config: { streams } } = this
+    return streams.filter(stream => stream.audio_lang === audioLang && stream.hardsub_lang === hardsubLang)
+  }
 
-    // We need to get seriesTitle separately
-    regex = /vilos\.config\.analytics\s*=\s*(\{.*\})/m
-    match = regex.exec(data)
-    if (match) {
-      try {
-        const analytics = JSON.parse(match[1])
-        this.seriesTitle = analytics.media_reporting_parent.title
-      } catch (e) {
+  async getSubtitles () {
+    const { axios } = this
+    const { config: { subtitles: subtitleMetadata } } = this
+    this.subtitles = []
+    await Promise.all(subtitleMetadata.map(async ({ language, url, title, format }) => {
+      const response = await axios.get(url)
+      if (response.status !== 200) {
+        throw new Error(response.statusText)
       }
-    }
+      const { data: ass } = response
+      this.subtitles.push(new Subtitle(title, language.substr(0, 2), ass))
+    }))
+  }
 
-    this.config = config
+  async processMetadata () {
+    const { config } = this
     const { metadata, streams } = config
     this.episodeTitle = metadata.title
     this.episodeNumber = Number(metadata.episode_number)
@@ -83,58 +98,4 @@ class Episode {
       }
     }, this)
   }
-
-  getLanguageAndCountry (input) {
-    const countryMap = {
-      BR: 'Brasil',
-      DE: 'Germany',
-      ES: 'España',
-      FR: 'France',
-      IT: 'Italy',
-      JP: 'Japan',
-      LA: 'América Latina',
-      UK: 'United Kingdom',
-      US: 'America'
-    }
-    const languageMap = {
-      en: 'English',
-      de: 'Deutsch',
-      es: 'Español',
-      it: 'Italiano',
-      ja: '日本語',
-      fr: 'Français',
-      pt: 'Português',
-      ar: 'العربية',
-      ru: 'Русский',
-      kr: '한국어'
-    }
-
-    const lang = input.substring(0, 2).toLowerCase()
-    const ctry = input.substring(2, 4).toUpperCase()
-
-    const language = languageMap[lang]
-    const country = countryMap[ctry]
-    return { language, country }
-  }
-
-  getStreamsByLanuage (audioLang, hardsubLang) {
-    const { config: { streams } } = this
-    return streams.filter(stream => stream.audio_lang === audioLang && stream.hardsub_lang === hardsubLang)
-  }
-
-  async getSubtitles () {
-    const { axios } = this
-    const { config: { subtitles: subtitleMetadata } } = this
-    this.subtitles = []
-    await Promise.all(subtitleMetadata.map(async ({ language, url, title, format }) => {
-      const response = await axios.get(url)
-      if (response.status !== 200) {
-        throw new Error(response.statusText)
-      }
-      const { data: ass } = response
-      this.subtitles.push(new Subtitle(title, language.substr(0, 2), ass))
-    }))
-  }
 }
-
-export default Episode

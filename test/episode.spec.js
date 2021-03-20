@@ -1,5 +1,5 @@
 import axios from 'axios'
-import Episode from '@/episode'
+import Episode from '@/old'
 import jsdom from 'jsdom'
 
 let episode

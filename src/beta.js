@@ -6,7 +6,7 @@ const signatureURL = 'https://beta-api.crunchyroll.com/index/v2'
 const queryParams = '?Signature={{signature}}&Policy={{policy}}&Key-Pair-Id={{keyPairID}}'
 const metadataURLTemplate = `https://beta-api.crunchyroll.com/cms/v2/US/M2/crunchyroll/objects/{{videoID}}${queryParams}`
 const streamsURLTemplate = `https://beta-api.crunchyroll.com/cms/v2/US/M2/crunchyroll/videos/{{videoID}}/streams${queryParams}`
-const videoIDRegex = /https?:\/\/.*?\.crunchyroll\.com\/watch\/(.*?)(\/.*)?$/g
+const videoIDRegex = /https?:\/\/.*?\.crunchyroll\.com\/watch\/([a-zA-Z0-9_]+)(\/.*)?/
 
 module.exports = class NewEpisode extends Episode {
   async parse () {

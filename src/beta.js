@@ -90,10 +90,20 @@ module.exports = class NewEpisode extends Episode {
     const subtitles = []
     for (const data of Object.values(subtitlesRaw)) {
       const { locale, format, url } = data
-      const { language, country } = this.getLanguageAndCountry(locale)
+      let language
+      let country
+      let title
+      try {
+        ({ language, country } = this.getLanguageAndCountry(locale))
+        title = `${language} (${country})`
+      } catch (e) {
+        language = locale ? locale.substring(0, 2) : '--'
+        country = ''
+        title = 'Unknown'
+      }
       const subtitle = {
         url,
-        label: language,
+        title,
         language,
         country,
         format,

@@ -20,7 +20,8 @@ const browser = {
     path: path.resolve(__dirname, 'dist'),
     filename: 'bundle.js',
     library: 'Crunchyroll',
-    globalObject: 'window'
+    globalObject: 'window',
+    libraryTarget: 'umd'
   }
 }
 

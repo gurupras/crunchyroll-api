@@ -4,11 +4,52 @@ const Episode = require('./episode')
 const tokenURL = 'https://beta-api.crunchyroll.com/auth/v1/token'
 const signatureURL = 'https://beta-api.crunchyroll.com/index/v2'
 const queryParams = '?Signature={{signature}}&Policy={{policy}}&Key-Pair-Id={{keyPairID}}'
-const metadataURLTemplate = `https://beta-api.crunchyroll.com/cms/v2/US/M2/-/objects/{{videoID}}${queryParams}`
-const streamsURLTemplate = `https://beta-api.crunchyroll.com/cms/v2/US/M2/-/videos/{{videoID}}/streams${queryParams}`
+const metadataURLTemplate = `https://beta-api.crunchyroll.com/cms/v2/US/M2/crunchyroll/objects/{{videoID}}${queryParams}`
+const streamsURLTemplate = `https://beta-api.crunchyroll.com/cms/v2/US/M2/crunchyroll/videos/{{videoID}}/streams${queryParams}`
+
+const altMetadataURLTemplate = `https://beta-api.crunchyroll.com/cms/v2/US/M2/-/objects/{{videoID}}${queryParams}`
+const altStreamsURLTemplate = `https://beta-api.crunchyroll.com/cms/v2/US/M2/-/videos/{{videoID}}/streams${queryParams}`
+
 const videoIDRegex = /https?:\/\/.*?\.crunchyroll\.com\/(\S+\/)?watch\/([a-zA-Z0-9_]+)(\/.*)?/
 
 module.exports = class NewEpisode extends Episode {
+  async fetchMetadataURL ({ videoID, keyPairID, policy, signature }) {
+    const { axios } = this
+    const templates = [metadataURLTemplate, altMetadataURLTemplate]
+    for (const urlTemplate of templates) {
+      try {
+        const metadataURL = mustache.render(urlTemplate, {
+          videoID,
+          keyPairID,
+          policy,
+          signature
+        })
+        const response = await axios.get(metadataURL)
+        return response
+      } catch (e) {
+      }
+    }
+    throw new Error('Failed to fetch data from all metadata URLs')
+  }
+
+  async fetchStreamsURL (href, { videoID, keyPairID, policy, signature }, templates = [streamsURLTemplate]) {
+    const { axios } = this
+    for (const streamsURLTemplate of templates) {
+      try {
+        const streamsURL = mustache.render(streamsURLTemplate, {
+          videoID,
+          keyPairID,
+          policy,
+          signature
+        })
+        const response = await axios.get(streamsURL)
+        return response
+      } catch (e) {
+      }
+    }
+    throw new Error('Failed to fetch data from all streams URLs')
+  }
+
   async parse () {
     const { axios, basicAuth } = this
     let response
@@ -36,13 +77,7 @@ module.exports = class NewEpisode extends Episode {
     // Get config
     const match = videoIDRegex.exec(this.url)
     const videoID = match[2]
-    const metadataURL = mustache.render(metadataURLTemplate, {
-      videoID,
-      keyPairID,
-      policy,
-      signature
-    })
-    response = await axios.get(metadataURL)
+    response = await this.fetchMetadataURL({ videoID, keyPairID, policy, signature })
     const { data: { items: [objectMetadata] } } = response
     const { episode_metadata: metadata } = objectMetadata
     this.objectMetadata = objectMetadata
@@ -60,19 +95,17 @@ module.exports = class NewEpisode extends Episode {
     } catch (e) {
       this.config.thumbnail = { url: '' }
     }
-    let streamURLTemplate = streamsURLTemplate
+    let streamsHref
+    const streamsTemplates = [streamsURLTemplate]
     try {
-      const { __links__: { streams: { href } } } = objectMetadata
-      streamURLTemplate = `${new URL(streamsURLTemplate).origin}${href}${queryParams}`
+      ;({ __links__: { streams: { href: streamsHref } } } = objectMetadata)
+      if (streamsHref) {
+        const altTemplate = `${new URL(streamsURLTemplate).origin}${streamsHref}${queryParams}`
+        streamsTemplates.push(altTemplate)
+      }
     } catch (e) {
     }
-    const streamsURL = mustache.render(streamURLTemplate, {
-      videoID,
-      keyPairID,
-      policy,
-      signature
-    })
-    response = await axios.get(streamsURL)
+    response = await this.fetchStreamsURL(streamsHref, { videoID, keyPairID, policy, signature }, streamsTemplates)
     const { data: { streams: streamsRaw, subtitles: subtitlesRaw } } = response
     // We're going to have to convert this streams object to the old format
     const streams = []

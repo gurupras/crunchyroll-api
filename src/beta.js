@@ -10,7 +10,7 @@ const streamsURLTemplate = `https://beta-api.crunchyroll.com/cms/v2/US/M2/crunch
 const altMetadataURLTemplate = `https://beta-api.crunchyroll.com/cms/v2/US/M2/-/objects/{{videoID}}${queryParams}`
 const altStreamsURLTemplate = `https://beta-api.crunchyroll.com/cms/v2/US/M2/-/videos/{{videoID}}/streams${queryParams}`
 
-const videoIDRegex = /https?:\/\/.*?\.crunchyroll\.com\/(\S+\/)?watch\/([a-zA-Z0-9_]+)(\/.*)?/
+const videoIDRegex = /https?:\/\/(.*\.)?crunchyroll\.com\/(\S+\/)?watch\/([a-zA-Z0-9_]+)(\/.*)?/
 
 module.exports = class NewEpisode extends Episode {
   async fetchMetadataURL ({ videoID, keyPairID, policy, signature }) {
@@ -76,7 +76,12 @@ module.exports = class NewEpisode extends Episode {
 
     // Get config
     const match = videoIDRegex.exec(this.url)
-    const videoID = match[2]
+    if (!match) {
+      const err = new Error('Failed to match videoID regex to url')
+      err.data = { url: this.url }
+      throw err
+    }
+    const videoID = match[3]
     response = await this.fetchMetadataURL({ videoID, keyPairID, policy, signature })
     const { data: { items: [objectMetadata] } } = response
     const { episode_metadata: metadata } = objectMetadata

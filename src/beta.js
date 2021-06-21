@@ -76,7 +76,7 @@ module.exports = class NewEpisode extends Episode {
     const match = videoIDRegex.exec(this.url)
     if (!match) {
       const err = new Error('Failed to match videoID regex to url')
-      err.data = { url: this.url }
+      err.data = { url: this.url, cmsBucket }
       throw err
     }
     const videoID = match[3]

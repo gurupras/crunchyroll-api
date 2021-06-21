@@ -13,8 +13,8 @@ const node = {
 
 const browser = {
   entry: './src/index.js',
-  mode: 'production',
-  // devtool: 'inline-source-map',
+  mode: 'development',
+  devtool: 'inline-source-map',
   target: 'web',
   output: {
     path: path.resolve(__dirname, 'dist'),

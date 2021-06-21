@@ -4,21 +4,18 @@ const Episode = require('./episode')
 const tokenURL = 'https://beta-api.crunchyroll.com/auth/v1/token'
 const signatureURL = 'https://beta-api.crunchyroll.com/index/v2'
 const queryParams = '?Signature={{signature}}&Policy={{policy}}&Key-Pair-Id={{keyPairID}}'
-const metadataURLTemplate = `https://beta-api.crunchyroll.com/cms/v2/US/M2/crunchyroll/objects/{{videoID}}${queryParams}`
-const streamsURLTemplate = `https://beta-api.crunchyroll.com/cms/v2/US/M2/crunchyroll/videos/{{videoID}}/streams${queryParams}`
-
-const altMetadataURLTemplate = `https://beta-api.crunchyroll.com/cms/v2/US/M2/-/objects/{{videoID}}${queryParams}`
-const altStreamsURLTemplate = `https://beta-api.crunchyroll.com/cms/v2/US/M2/-/videos/{{videoID}}/streams${queryParams}`
+const metadataURLTemplate = `https://beta-api.crunchyroll.com/cms/v2{{{cmsBucket}}}/objects/{{videoID}}${queryParams}`
+const streamsURLTemplate = `https://beta-api.crunchyroll.com/cms/v2{{{cmsBucket}}}/videos/{{videoID}}/streams${queryParams}`
 
 const videoIDRegex = /https?:\/\/(.*\.)?crunchyroll\.com\/(\S+\/)?watch\/([a-zA-Z0-9_]+)(\/.*)?/
 
 module.exports = class NewEpisode extends Episode {
-  async fetchMetadataURL ({ videoID, keyPairID, policy, signature }) {
+  async fetchMetadataURL ({ videoID, keyPairID, policy, signature, cmsBucket }, templates = [metadataURLTemplate]) {
     const { axios } = this
-    const templates = [metadataURLTemplate, altMetadataURLTemplate]
     for (const urlTemplate of templates) {
       try {
         const metadataURL = mustache.render(urlTemplate, {
+          cmsBucket,
           videoID,
           keyPairID,
           policy,
@@ -32,11 +29,12 @@ module.exports = class NewEpisode extends Episode {
     throw new Error('Failed to fetch data from all metadata URLs')
   }
 
-  async fetchStreamsURL (href, { videoID, keyPairID, policy, signature }, templates = [streamsURLTemplate]) {
+  async fetchStreamsURL (href, { videoID, keyPairID, policy, signature, cmsBucket }, templates = [streamsURLTemplate]) {
     const { axios } = this
     for (const streamsURLTemplate of templates) {
       try {
         const streamsURL = mustache.render(streamsURLTemplate, {
+          cmsBucket,
           videoID,
           keyPairID,
           policy,
@@ -69,7 +67,7 @@ module.exports = class NewEpisode extends Episode {
         Authorization: `Bearer ${accessToken}`
       }
     })
-    const { data: { cms: { key_pair_id: keyPairID, policy, signature } } } = response
+    const { data: { cms: { bucket: cmsBucket, key_pair_id: keyPairID, policy, signature } } } = response
     this.keyPairID = keyPairID
     this.policy = policy
     this.signature = signature
@@ -82,7 +80,7 @@ module.exports = class NewEpisode extends Episode {
       throw err
     }
     const videoID = match[3]
-    response = await this.fetchMetadataURL({ videoID, keyPairID, policy, signature })
+    response = await this.fetchMetadataURL({ videoID, keyPairID, policy, signature, cmsBucket }, [metadataURLTemplate])
     const { data: { items: [objectMetadata] } } = response
     const { episode_metadata: metadata } = objectMetadata
     this.objectMetadata = objectMetadata
@@ -106,11 +104,11 @@ module.exports = class NewEpisode extends Episode {
       ;({ __links__: { streams: { href: streamsHref } } } = objectMetadata)
       if (streamsHref) {
         const altTemplate = `${new URL(streamsURLTemplate).origin}${streamsHref}${queryParams}`
-        streamsTemplates.push(altTemplate)
+        streamsTemplates.unshift(altTemplate)
       }
     } catch (e) {
     }
-    response = await this.fetchStreamsURL(streamsHref, { videoID, keyPairID, policy, signature }, streamsTemplates)
+    response = await this.fetchStreamsURL(streamsHref, { videoID, keyPairID, policy, signature, cmsBucket }, streamsTemplates)
     const { data: { streams: streamsRaw, subtitles: subtitlesRaw } } = response
     // We're going to have to convert this streams object to the old format
     const streams = []

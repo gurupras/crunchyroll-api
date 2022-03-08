@@ -15,7 +15,7 @@
     "mustache": "^4.1.0",
     "qs": "^6.10.0",
     "subsrt": "^1.1.1",
-    "urijs": "^1.19.6"
+    "urijs": "^1.19.10"
   },
   "devDependencies": {
     "@babel/core": "^7.13.10",

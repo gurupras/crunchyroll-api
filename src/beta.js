@@ -48,20 +48,33 @@ module.exports = class NewEpisode extends Episode {
     throw new Error('Failed to fetch data from all streams URLs')
   }
 
-  async parse () {
+  async getAccessToken () {
     const { axios, basicAuth } = this
+    // We need to try two grant types
+    const grantTypes = ['etp_rt_cookie', 'client_id']
+    for (const grantType of grantTypes) {
+      const params = new URLSearchParams()
+      params.set('grant_type', grantType)
+      try {
+        const response = await axios.post(tokenURL, params, {
+          headers: {
+            Authorization: `Basic ${basicAuth}`,
+            'content-type': 'application/x-www-form-urlencoded'
+          },
+          withCredentials: true
+        })
+        const { data: { access_token: accessToken } } = response
+        return accessToken
+      } catch (e) {
+      }
+    }
+    throw new Error('Failed to get access token')
+  }
+
+  async parse () {
+    const { axios } = this
     let response
-    // First get signature, policy and keyPairID
-    const params = new URLSearchParams()
-    params.set('grant_type', 'etp_rt_cookie')
-    response = await axios.post(tokenURL, params, {
-      headers: {
-        Authorization: `Basic ${basicAuth}`,
-        'content-type': 'application/x-www-form-urlencoded'
-      },
-      withCredentials: true
-    })
-    const { data: { access_token: accessToken } } = response
+    const accessToken = await this.getAccessToken()
     response = await axios.get(signatureURL, {
       headers: {
         Authorization: `Bearer ${accessToken}`

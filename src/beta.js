@@ -74,6 +74,13 @@ module.exports = class NewEpisode extends Episode {
   async parse () {
     const { axios } = this
     let response
+    if (!this.basicAuth) {
+      response = await axios.get(this.url)
+      // Get config
+      const data = response.data
+      const { basicAuth } = await this.getConfigForParse(data)
+      this.basicAuth = basicAuth
+    }
     const accessToken = await this.getAccessToken()
     response = await axios.get(signatureURL, {
       headers: {

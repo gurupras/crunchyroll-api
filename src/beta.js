@@ -1,11 +1,11 @@
 const mustache = require('mustache')
 const Episode = require('./episode')
 
-const tokenURL = 'https://beta-api.crunchyroll.com/auth/v1/token'
-const signatureURL = 'https://beta-api.crunchyroll.com/index/v2'
+const tokenURL = 'https://www.crunchyroll.com/auth/v1/token'
+const signatureURL = 'https://www.crunchyroll.com/index/v2'
 const queryParams = '?Signature={{signature}}&Policy={{policy}}&Key-Pair-Id={{keyPairID}}'
-const metadataURLTemplate = `https://beta-api.crunchyroll.com/cms/v2{{{cmsBucket}}}/objects/{{videoID}}${queryParams}`
-const streamsURLTemplate = `https://beta-api.crunchyroll.com/cms/v2{{{cmsBucket}}}/videos/{{videoID}}/streams${queryParams}`
+const metadataURLTemplate = `https://www.crunchyroll.com/cms/v2{{{cmsBucket}}}/objects/{{videoID}}${queryParams}`
+const streamsURLTemplate = `https://www.crunchyroll.com/cms/v2{{{cmsBucket}}}/videos/{{videoID}}/streams${queryParams}`
 
 const videoIDRegex = /https?:\/\/(.*\.)?crunchyroll\.com\/(\S+\/)?watch\/([a-zA-Z0-9_]+)(\/.*)?/
 

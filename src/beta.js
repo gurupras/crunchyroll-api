@@ -9,6 +9,8 @@ const streamsURLTemplate = `https://www.crunchyroll.com/cms/v2{{{cmsBucket}}}/vi
 
 const videoIDRegex = /https?:\/\/(.*\.)?crunchyroll\.com\/(\S+\/)?watch\/([a-zA-Z0-9_]+)(\/.*)?/
 
+const defaultCMSType = 'cms'
+
 module.exports = class NewEpisode extends Episode {
   async fetchMetadataURL ({ videoID, keyPairID, policy, signature, cmsBucket }, templates = [metadataURLTemplate]) {
     const { axios } = this
@@ -87,7 +89,8 @@ module.exports = class NewEpisode extends Episode {
         Authorization: `Bearer ${accessToken}`
       }
     })
-    const { data: { cms: { bucket: cmsBucket, key_pair_id: keyPairID, policy, signature } } } = response
+    const cmsType = this.cmsType || defaultCMSType
+    const { data: { [cmsType]: { bucket: cmsBucket, key_pair_id: keyPairID, policy, signature } } } = response
     this.keyPairID = keyPairID
     this.policy = policy
     this.signature = signature

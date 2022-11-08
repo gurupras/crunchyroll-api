@@ -6,7 +6,7 @@ import polyfills from 'rollup-plugin-polyfill-node'
 const common = {
   input: 'src/index.js',
   plugins: [
-    polyfills(),
+    // polyfills(),
     json(),
     commonjs(),
     nodeResolve()

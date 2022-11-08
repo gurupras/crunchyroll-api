@@ -1,5 +1,3 @@
-'use strict';
-
 var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
 function getAugmentedNamespace(n) {
@@ -2999,4 +2997,4 @@ var src = {
   getEpisode
 };
 
-module.exports = src;
+export { src as default };

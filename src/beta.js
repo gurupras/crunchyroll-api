@@ -12,6 +12,12 @@ const videoIDRegex = /https?:\/\/(.*\.)?crunchyroll\.com\/(\S+\/)?watch\/([a-zA-
 const defaultCMSType = 'cms'
 
 module.exports = class NewEpisode extends Episode {
+  /**
+   *
+   * @param {import('./types').AuthInfo} authInfo
+   * @param {string[]} templates
+   * @returns
+   */
   async fetchMetadataURL ({ videoID, keyPairID, policy, signature, cmsBucket }, templates = [metadataURLTemplate]) {
     const { axios } = this
     for (const urlTemplate of templates) {
@@ -31,6 +37,13 @@ module.exports = class NewEpisode extends Episode {
     throw new Error('Failed to fetch data from all metadata URLs')
   }
 
+  /**
+   *
+   * @param {string} href
+   * @param {import('./types').AuthInfo} authInfo
+   * @param {string[]} templates
+   * @returns
+   */
   async fetchStreamsURL (href, { videoID, keyPairID, policy, signature, cmsBucket }, templates = [streamsURLTemplate]) {
     const { axios } = this
     for (const streamsURLTemplate of templates) {
@@ -50,6 +63,10 @@ module.exports = class NewEpisode extends Episode {
     throw new Error('Failed to fetch data from all streams URLs')
   }
 
+  /**
+   *
+   * @returns {Promise<string>}
+   */
   async getAccessToken () {
     const { axios, basicAuth } = this
     // We need to try two grant types
@@ -187,6 +204,11 @@ module.exports = class NewEpisode extends Episode {
   }
 
   // This function returns the basicAuth
+  /**
+   *
+   * @param {string} data
+   * @returns {Promise<any>}
+   */
   async getConfigForParse (data) {
     // This data contains the accountAuthClientId parameter that we need
     const regex = /"accountAuthClientId":\s*"(.*?)"/g

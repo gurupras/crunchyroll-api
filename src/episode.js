@@ -3,7 +3,13 @@ const Axios = require('axios')
 const Subtitle = require('./subtitle')
 
 module.exports = class Episode {
-  constructor (url, parameters, axios = Axios) {
+  /**
+   *
+   * @param {string} url
+   * @param {any} parameters
+   * @param {import('axios').AxiosInstance} axios
+   */
+  constructor (url, parameters, axios = Axios.create()) {
     this.url = url
     Object.assign(this, parameters)
     this.axios = axios

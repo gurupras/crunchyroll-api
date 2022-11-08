@@ -50,7 +50,7 @@ module.exports = class Episode {
     const ctry = input.substring(2, 4).toUpperCase()
 
     const language = languageMap[lang]
-    const country = countryMap[ctry]
+    const country = countryMap[ctry] || ''
     return { language, country }
   }
 

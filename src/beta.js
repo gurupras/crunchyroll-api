@@ -171,7 +171,10 @@ module.exports = class NewEpisode extends Episode {
       let title
       try {
         ({ language, country } = this.getLanguageAndCountry(locale))
-        title = `${language} (${country})`
+        title = `${language}`
+        if (country) {
+          title += ` (${country})`
+        }
       } catch (e) {
         language = locale ? locale.substring(0, 2) : '--'
         country = ''

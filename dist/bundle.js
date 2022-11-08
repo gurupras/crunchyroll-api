@@ -5474,7 +5474,7 @@
         var lang = input.substring(0, 2).toLowerCase();
         var ctry = input.substring(2, 4).toUpperCase();
         var language = languageMap[lang];
-        var country = countryMap[ctry];
+        var country = countryMap[ctry] || '';
         return {
           language: language,
           country: country
@@ -6749,7 +6749,10 @@
                       _this$getLanguageAndC = this.getLanguageAndCountry(_locale);
                       language = _this$getLanguageAndC.language;
                       country = _this$getLanguageAndC.country;
-                      title = "".concat(language, " (").concat(country, ")");
+                      title = "".concat(language);
+                      if (country) {
+                        title += " (".concat(country, ")");
+                      }
                     } catch (e) {
                       language = _locale ? _locale.substring(0, 2) : '--';
                       country = '';

@@ -51,7 +51,7 @@ module.exports = class Episode {
 
     const language = languageMap[lang]
     const country = countryMap[ctry] || ''
-    return { language, country }
+    return { language, country, srclang: lang }
   }
 
   getStreamsByLanuage (audioLang, hardsubLang) {
@@ -82,9 +82,10 @@ module.exports = class Episode {
     streams.forEach(stream => {
       try {
         if (stream.audio_lang) {
-          const { language, country } = this.getLanguageAndCountry(stream.audio_lang)
+          const { language, country, srclang } = this.getLanguageAndCountry(stream.audio_lang)
           Object.assign(stream, {
             audio: {
+              srclang,
               language,
               country
             }
@@ -93,9 +94,10 @@ module.exports = class Episode {
       } catch (e) {
       }
       try {
-        const { language, country } = this.getLanguageAndCountry(stream.hardsub_lang)
+        const { language, country, srclang } = this.getLanguageAndCountry(stream.hardsub_lang)
         Object.assign(stream, {
           hardsub: {
+            srclang,
             language,
             country
           }

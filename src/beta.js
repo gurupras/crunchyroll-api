@@ -169,8 +169,9 @@ module.exports = class NewEpisode extends Episode {
       let language
       let country
       let title
+      let srclang
       try {
-        ({ language, country } = this.getLanguageAndCountry(locale))
+        ({ language, country, srclang } = this.getLanguageAndCountry(locale))
         title = `${language}`
         if (country) {
           title += ` (${country})`
@@ -179,6 +180,7 @@ module.exports = class NewEpisode extends Episode {
         language = locale ? locale.substring(0, 2) : '--'
         country = ''
         title = 'Unknown'
+        srclang = '--'
       }
       const subtitle = {
         url,
@@ -186,6 +188,7 @@ module.exports = class NewEpisode extends Episode {
         language,
         country,
         format,
+        srclang,
         kind: 'captions'
       }
       subtitles.push(subtitle)

@@ -5477,7 +5477,8 @@
         var country = countryMap[ctry] || '';
         return {
           language: language,
-          country: country
+          country: country,
+          srclang: lang
         };
       }
     }, {
@@ -5565,9 +5566,11 @@
                       if (stream.audio_lang) {
                         var _this2$getLanguageAnd = _this2.getLanguageAndCountry(stream.audio_lang),
                           language = _this2$getLanguageAnd.language,
-                          country = _this2$getLanguageAnd.country;
+                          country = _this2$getLanguageAnd.country,
+                          srclang = _this2$getLanguageAnd.srclang;
                         Object.assign(stream, {
                           audio: {
+                            srclang: srclang,
                             language: language,
                             country: country
                           }
@@ -5577,9 +5580,11 @@
                     try {
                       var _this2$getLanguageAnd2 = _this2.getLanguageAndCountry(stream.hardsub_lang),
                         _language = _this2$getLanguageAnd2.language,
-                        _country = _this2$getLanguageAnd2.country;
+                        _country = _this2$getLanguageAnd2.country,
+                        _srclang = _this2$getLanguageAnd2.srclang;
                       Object.assign(stream, {
                         hardsub: {
+                          srclang: _srclang,
                           language: _language,
                           country: _country
                         }
@@ -6618,7 +6623,7 @@
       key: "parse",
       value: function () {
         var _parse = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee4() {
-          var axios, response, data, _yield$this$getConfig, basicAuth, accessToken, cmsType, _response, _response$data$cmsTyp, cmsBucket, keyPairID, policy, signature, match, err, videoID, _response2, _response2$data$items, objectMetadata, metadata, _objectMetadata$image, thumbnails, streamsHref, streamsTemplates, altTemplate, _response3, _response3$data, streamsRaw, subtitlesRaw, streams, _i2, _Object$entries, _Object$entries$_i, type, _i3, _Object$entries2, _Object$entries2$_i, locale, entry, stream, subtitles, _i4, _Object$values, _data, _locale, format, url, language, country, title, _this$getLanguageAndC, subtitle;
+          var axios, response, data, _yield$this$getConfig, basicAuth, accessToken, cmsType, _response, _response$data$cmsTyp, cmsBucket, keyPairID, policy, signature, match, err, videoID, _response2, _response2$data$items, objectMetadata, metadata, _objectMetadata$image, thumbnails, streamsHref, streamsTemplates, altTemplate, _response3, _response3$data, streamsRaw, subtitlesRaw, streams, _i2, _Object$entries, _Object$entries$_i, type, _i3, _Object$entries2, _Object$entries2$_i, locale, entry, stream, subtitles, _i4, _Object$values, _data, _locale, format, url, language, country, title, srclang, _this$getLanguageAndC, subtitle;
           return regenerator.wrap(function _callee4$(_context4) {
             while (1) {
               switch (_context4.prev = _context4.next) {
@@ -6745,10 +6750,12 @@
                     language = void 0;
                     country = void 0;
                     title = void 0;
+                    srclang = void 0;
                     try {
                       _this$getLanguageAndC = this.getLanguageAndCountry(_locale);
                       language = _this$getLanguageAndC.language;
                       country = _this$getLanguageAndC.country;
+                      srclang = _this$getLanguageAndC.srclang;
                       title = "".concat(language);
                       if (country) {
                         title += " (".concat(country, ")");
@@ -6757,6 +6764,7 @@
                       language = _locale ? _locale.substring(0, 2) : '--';
                       country = '';
                       title = 'Unknown';
+                      srclang = '--';
                     }
                     subtitle = {
                       url: url,
@@ -6764,6 +6772,7 @@
                       language: language,
                       country: country,
                       format: format,
+                      srclang: srclang,
                       kind: 'captions'
                     };
                     subtitles.push(subtitle);

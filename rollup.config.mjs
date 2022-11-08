@@ -1,6 +1,7 @@
 import nodeResolve from '@rollup/plugin-node-resolve'
 import commonjs from '@rollup/plugin-commonjs'
 import json from '@rollup/plugin-json'
+import babel from '@rollup/plugin-babel'
 import polyfills from 'rollup-plugin-polyfill-node'
 
 const common = {
@@ -8,7 +9,12 @@ const common = {
   plugins: [
     // polyfills(),
     json(),
-    commonjs(),
+    commonjs({
+      dynamicRequireTargets: [
+        'node_modules/subsrt/lib/format/*.js'
+      ]
+    }),
+    babel({ babelHelpers: 'runtime' }),
     nodeResolve()
   ]
 }

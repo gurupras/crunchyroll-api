@@ -29,7 +29,8 @@ module.exports = class Episode {
       JP: 'Japan',
       LA: 'América Latina',
       UK: 'United Kingdom',
-      US: 'America'
+      US: 'America',
+      IN: 'India'
     }
     const languageMap = {
       en: 'English',
@@ -41,7 +42,8 @@ module.exports = class Episode {
       pt: 'Português',
       ar: 'العربية',
       ru: 'Русский',
-      kr: '한국어'
+      kr: '한국어',
+      hi: 'हिंदी'
     }
 
     // If input has a -, get rid of it
@@ -49,7 +51,7 @@ module.exports = class Episode {
     const lang = input.substring(0, 2).toLowerCase()
     const ctry = input.substring(2, 4).toUpperCase()
 
-    const language = languageMap[lang]
+    const language = languageMap[lang] || '??'
     const country = countryMap[ctry] || ''
     return { language, country, srclang: lang }
   }

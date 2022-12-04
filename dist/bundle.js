@@ -5454,7 +5454,8 @@
           JP: 'Japan',
           LA: 'América Latina',
           UK: 'United Kingdom',
-          US: 'America'
+          US: 'America',
+          IN: 'India'
         };
         var languageMap = {
           en: 'English',
@@ -5466,14 +5467,15 @@
           pt: 'Português',
           ar: 'العربية',
           ru: 'Русский',
-          kr: '한국어'
+          kr: '한국어',
+          hi: 'हिंदी'
         };
 
         // If input has a -, get rid of it
         input = input.replace(/-/g, '');
         var lang = input.substring(0, 2).toLowerCase();
         var ctry = input.substring(2, 4).toUpperCase();
-        var language = languageMap[lang];
+        var language = languageMap[lang] || '??';
         var country = countryMap[ctry] || '';
         return {
           language: language,
